@@ -4,6 +4,9 @@
 from the rules in force on any date since 1 January 2023, with the Inland Revenue Department
 source for every answer.
 
+**[Try the calculator →](https://shalomhunukumbura.github.io/lk-tax/)** It runs entirely in your
+browser: the same Python package, via WebAssembly, so nothing you type is sent anywhere.
+
 ```python
 >>> import lk_tax
 >>> r = lk_tax.apit_monthly(350_000, on="2026-09-30")
@@ -75,6 +78,11 @@ uvicorn lk_tax.api:app        # → http://localhost:8000 (calculator), /docs (A
 ```
 
 Or run the calculator with Docker: `docker build -t lk-tax . && docker run -p 8000:8000 lk-tax`.
+
+The [hosted calculator](https://shalomhunukumbura.github.io/lk-tax/) needs no server at all:
+`scripts/build_static.py` packages the same page with a small shim that answers its `/api/...`
+calls by running lk-tax in the browser with [Pyodide](https://pyodide.org). GitHub Pages
+rebuilds it from `main` on every push, and a test checks that the in-browser answers match the API's.
 
 ## The rules are data
 

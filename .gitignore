@@ -1,0 +1,8 @@
+__pycache__/
+*.egg-info/
+.venv/
+dist/
+.pytest_cache/
+# Official IRD PDFs used for research: public, large, and linked from RATES.md
+research/sources/
+EXPLAINED.md

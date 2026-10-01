@@ -1,0 +1,38 @@
+# Social Security Contribution Levy: 2.5% of the liable turnover, where the
+# liable share of turnover depends on the activity.
+
+[activities]
+import = { name = "Importing", share = 1.00 }
+manufacture = { name = "Manufacturing", share = 0.85 }
+service = { name = "Providing services", share = 1.00 }
+distributor = { name = "Sale by a registered distributor of a Sri Lankan manufacturer or producer", share = 0.25 }
+wholesale_retail = { name = "Any other wholesale or retail sale, including importing and reselling", share = 0.50 }
+
+[[versions]]
+effective_from = 2023-01-01
+note = "Levy imposed from 1 October 2022 by the SSCL Act No. 25 of 2022."
+rate = 0.025
+quarter_threshold = 30_000_000
+annual_threshold = 120_000_000
+sources = [
+    { title = "Notice PN/SSCL/2022-01: implementation of SSCL", url = "https://www.ird.gov.lk/en/Lists/Latest%20News%20%20Notices/Attachments/756/PN_SSL_2022-01_21092022_E.pdf" },
+]
+
+[[versions]]
+effective_from = 2024-01-01
+rate = 0.025
+quarter_threshold = 15_000_000
+annual_threshold = 60_000_000
+sources = [
+    { title = "IRD: Social Security Contribution Levy (SSCL)", url = "https://www.ird.gov.lk/en/Type%20of%20Taxes/SitePages/Social%20Security%20Contribution%20Levy%20(SSCL).aspx" },
+]
+
+[[versions]]
+effective_from = 2026-07-01
+note = "SSCL (Amendment) Act No. 10 of 2026. Also: motor vehicle imports liable from 1 May 2026; wholesale/retail of motor vehicles exempt from 1 May 2026."
+rate = 0.025
+quarter_threshold = 9_000_000
+annual_threshold = 36_000_000
+sources = [
+    { title = "Notice PN/SSCL/2026-04/1: SSCL (Amendment) Act No. 10 of 2026", url = "https://www.ird.gov.lk/en/Lists/Latest%20News%20%20Notices/Attachments/780/PN_SSCL_2026-04_1_E.pdf" },
+]

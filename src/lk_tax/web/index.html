@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lk-tax calculator</title>
+<meta name="description" content="Sri Lankan APIT, income tax, withholding tax, VAT and SSCL, with the Inland Revenue source for every answer.">
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --text: #1c1c1a; --muted: #6b6b66; --line: #e4e3de;
+    --accent: #0f766e; --accent-soft: #e6f2f0; --warn: #9a3412; --warn-soft: #fdf1e9;
+    --radius: 12px; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #131412; --card: #1c1d1b; --text: #ecece8; --muted: #9a9a93; --line: #2e2f2c;
+      --accent: #2dd4bf; --accent-soft: #14302c; --warn: #fdba74; --warn-soft: #3a2415;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+  header h1 { font-size: 1.6rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--muted); }
+  .asof { display: flex; gap: 10px; align-items: center; margin: 24px 0 16px; flex-wrap: wrap; }
+  .asof label { color: var(--muted); font-size: .9rem; }
+  input, select { font: inherit; color: var(--text); background: var(--card); border: 1px solid var(--line);
+                  border-radius: 8px; padding: 9px 11px; width: 100%; }
+  input:focus, select:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .asof input { width: auto; }
+  nav { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+  nav button { font: inherit; background: none; border: 0; padding: 10px 14px; color: var(--muted);
+               cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+  nav button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+  section[role="tabpanel"] { padding-top: 20px; }
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .field label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: 4px; }
+  .check { display: flex; gap: 8px; align-items: center; font-size: .9rem; color: var(--muted); }
+  .check input { width: auto; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+          padding: 20px; margin-top: 18px; }
+  .headline { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: baseline; }
+  .big { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .caption { color: var(--muted); font-size: .9rem; }
+  .pill { display: inline-block; background: var(--accent-soft); color: var(--accent); border-radius: 999px;
+          padding: 2px 10px; font-size: .8rem; font-weight: 600; }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 7px 4px; border-bottom: 1px solid var(--line); font-size: .92rem; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--muted); font-weight: 500; }
+  .bands td { white-space: nowrap; }
+  @media (max-width: 480px) { .bands th, .bands td { font-size: .8rem; padding: 7px 2px; } .big { font-size: 1.9rem; } }
+  .sources { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); font-size: .88rem; }
+  .sources a { color: var(--accent); }
+  .sources ul { margin: 6px 0 0; padding-left: 18px; }
+  .note { color: var(--muted); font-size: .88rem; margin-top: 10px; }
+  .error { color: var(--warn); }
+  footer { margin-top: 40px; color: var(--muted); font-size: .85rem; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>lk-tax</h1>
+    <p>Sri Lankan tax, calculated from the rules in force on any date, with the Inland Revenue source for every answer.</p>
+  </header>
+
+  <div class="asof">
+    <label for="on">Rules in force on</label>
+    <input type="date" id="on" min="2023-01-01">
+  </div>
+
+  <nav role="tablist" aria-label="Calculators">
+    <button role="tab" aria-selected="true" aria-controls="p-apit" id="t-apit">Salary (APIT)</button>
+    <button role="tab" aria-selected="false" aria-controls="p-annual" id="t-annual">Annual income tax</button>
+    <button role="tab" aria-selected="false" aria-controls="p-wht" id="t-wht">Withholding tax</button>
+    <button role="tab" aria-selected="false" aria-controls="p-vat" id="t-vat">VAT</button>
+    <button role="tab" aria-selected="false" aria-controls="p-sscl" id="t-sscl">SSCL</button>
+  </nav>
+
+  <section role="tabpanel" id="p-apit" aria-labelledby="t-apit">
+    <div class="fields">
+      <div class="field"><label for="apit-income">Monthly salary and allowances (Rs.)</label>
+        <input id="apit-income" inputmode="decimal" value="350000"></div>
+    </div>
+    <div class="card" id="apit-out" aria-live="polite"></div>
+  </section>
+
+  <section role="tabpanel" id="p-annual" aria-labelledby="t-annual" hidden>
+    <div class="fields">
+      <div class="field"><label for="annual-income">Assessable income for the year (Rs.)</label>
+        <input id="annual-income" inputmode="decimal" value="4000000"></div>
+      <div class="field"><label for="annual-year">Year of assessment</label>
+        <select id="annual-year"><option>2026/27</option><option>2025/26</option><option>2024/25</option><option>2023/24</option></select></div>
+    </div>
+    <div class="card" id="annual-out" aria-live="polite"></div>
+  </section>
+
+  <section role="tabpanel" id="p-wht" aria-labelledby="t-wht" hidden>
+    <div class="fields">
+      <div class="field"><label for="wht-type">Payment</label><select id="wht-type"></select></div>
+      <div class="field"><label for="wht-amount">Amount, excluding VAT (Rs.)</label>
+        <input id="wht-amount" inputmode="decimal" value="150000"></div>
+      <div class="field"><label for="wht-month">Total paid to them this month (optional)</label>
+        <input id="wht-month" inputmode="decimal" placeholder="same as amount"></div>
+    </div>
+    <p class="check"><input type="checkbox" id="wht-gross"><label for="wht-gross">Payer covers the tax (the amount is what the payee must receive)</label></p>
+    <div class="card" id="wht-out" aria-live="polite"></div>
+  </section>
+
+  <section role="tabpanel" id="p-vat" aria-labelledby="t-vat" hidden>
+    <div class="fields">
+      <div class="field"><label for="vat-amount">Amount (Rs.)</label><input id="vat-amount" inputmode="decimal" value="100000"></div>
+      <div class="field"><label for="vat-mode">This amount</label>
+        <select id="vat-mode"><option value="add">excludes VAT (add VAT)</option><option value="extract">includes VAT (extract VAT)</option></select></div>
+      <div class="field"><label for="vat-supply">Supply</label>
+        <select id="vat-supply"><option value="standard">Standard</option><option value="financial_services">Financial services</option></select></div>
+    </div>
+    <div class="card" id="vat-out" aria-live="polite"></div>
+  </section>
+
+  <section role="tabpanel" id="p-sscl" aria-labelledby="t-sscl" hidden>
+    <div class="fields">
+      <div class="field"><label for="sscl-activity">Activity</label><select id="sscl-activity"></select></div>
+      <div class="field"><label for="sscl-turnover">Turnover for the quarter (Rs.)</label>
+        <input id="sscl-turnover" inputmode="decimal" value="12000000"></div>
+    </div>
+    <div class="card" id="sscl-out" aria-live="polite"></div>
+  </section>
+
+  <footer>
+    Open source: <a href="https://github.com/ShalomHunukumbura/lk-tax">github.com/ShalomHunukumbura/lk-tax</a> ·
+    <a href="/docs">API</a> · Not tax advice. Check the linked sources for your situation.
+  </footer>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const rs = (v, digits = 2) => "Rs. " + Number(v).toLocaleString("en-LK", { minimumFractionDigits: digits, maximumFractionDigits: 2 });
+const num = (v, digits = 2) => Number(v).toLocaleString("en-LK", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+const pct = (v) => (Number(v) * 100).toLocaleString("en-LK", { maximumFractionDigits: 3 }) + "%";
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const clean = (v) => v.replace(/[,\s]/g, "");
+
+function sources(rule) {
+  const until = rule.effective_to ? `to ${rule.effective_to}` : "and still in force";
+  const items = rule.sources.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a></li>`).join("");
+  const note = rule.note ? `<p class="note">${esc(rule.note)}</p>` : "";
+  return `<div class="sources"><strong>Rule in force from ${rule.effective_from} ${until}</strong><ul>${items}</ul>${note}</div>`;
+}
+
+function bandTable(bands, unit) {
+  if (!bands.length) return "";
+  const band = (b) => `${num(b.from_amount, 0)} – ${b.to_amount ? num(b.to_amount, 0) : "up"}`;
+  const rows = bands.map((b) => `<tr><td>${pct(b.rate)}</td><td>${band(b)}</td><td>${num(b.taxable)}</td><td>${num(b.tax)}</td></tr>`).join("");
+  return `<table class="bands"><thead><tr><th>Rate</th><th>${unit} band (Rs.)</th><th>Taxed (Rs.)</th><th>Tax (Rs.)</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+async function call(path, params, out, render) {
+  const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== "" && v != null));
+  try {
+    const res = await fetch(`${path}?${q}`);
+    const body = await res.json();
+    $(out).innerHTML = res.ok ? render(body) : `<p class="error">${esc(body.error || "Something went wrong.")}</p>`;
+  } catch {
+    $(out).innerHTML = `<p class="error">Could not reach the API.</p>`;
+  }
+}
+
+const calculators = {
+  apit: () => call("/api/apit", { income: clean($("apit-income").value), on: $("on").value }, "apit-out", (r) => `
+    <div class="headline"><div><div class="caption">APIT to deduct this month</div><div class="big">${rs(r.tax, 0)}</div></div>
+      <div class="caption">Tax-free: first ${rs(r.monthly_relief, 0)} / month<br>Formula amount: ${rs(r.exact_tax)}</div></div>
+    ${bandTable(r.bands, "Monthly")}
+    <p class="note">Amount from APIT Tax Table No. 01, for a resident employee's primary employment. The table deducts whole rupees, so it can differ from the formula by up to Rs. 1.</p>
+    ${sources(r.rule)}`),
+
+  annual: () => call("/api/income-tax", { income: clean($("annual-income").value), year: $("annual-year").value }, "annual-out", (r) => `
+    <div class="headline"><div><div class="caption">Income tax for Y/A ${r.year_of_assessment}</div><div class="big">${rs(r.tax)}</div></div>
+      <div class="caption">Personal relief ${rs(r.personal_relief, 0)}<br>Effective rate ${pct(r.effective_rate)}</div></div>
+    ${bandTable(r.bands, "Annual")}
+    ${sources(r.rule)}`),
+
+  wht: () => call("/api/wht", { type: $("wht-type").value, amount: clean($("wht-amount").value), month_total: clean($("wht-month").value),
+                                payer_bears_tax: $("wht-gross").checked, on: $("on").value }, "wht-out", (r) => `
+    <div class="headline"><div><div class="caption">Withholding tax</div><div class="big">${rs(r.tax)}</div></div>
+      <span class="pill ${r.applies ? "" : "warn"}">${r.applies ? "WHT " + pct(r.rate) : "No WHT"}</span></div>
+    <table><tbody>
+      <tr><td>Gross payment</td><td>${rs(r.gross)}</td></tr>
+      <tr><td>Withholding tax</td><td>${rs(r.tax)}</td></tr>
+      <tr><td>Payee receives</td><td>${rs(r.net_paid)}</td></tr></tbody></table>
+    <p class="note">${esc(r.reason)}</p>
+    ${r.covers ? `<p class="note"><strong>Covers:</strong> ${esc(r.covers)}</p>` : ""}
+    ${sources(r.rule)}`),
+
+  vat: () => call("/api/vat", { amount: clean($("vat-amount").value), mode: $("vat-mode").value, supply: $("vat-supply").value, on: $("on").value }, "vat-out", (r) => `
+    <div class="headline"><div><div class="caption">VAT at ${pct(r.rate)}</div><div class="big">${rs(r.vat)}</div></div></div>
+    <table><tbody>
+      <tr><td>Excluding VAT</td><td>${rs(r.net)}</td></tr>
+      <tr><td>VAT</td><td>${rs(r.vat)}</td></tr>
+      <tr><td>Including VAT</td><td>${rs(r.gross)}</td></tr></tbody></table>
+    ${sources(r.rule)}`),
+
+  sscl: async () => {
+    const params = { turnover: clean($("sscl-turnover").value), activity: $("sscl-activity").value, on: $("on").value };
+    const reg = await fetch(`/api/sscl/registration?${new URLSearchParams({ quarter_turnover: params.turnover, on: params.on })}`).then((r) => r.json()).catch(() => null);
+    call("/api/sscl", params, "sscl-out", (r) => `
+      <div class="headline"><div><div class="caption">SSCL for the quarter</div><div class="big">${rs(r.levy)}</div></div>
+        <span class="pill ${reg && reg.must_register ? "warn" : ""}">${reg && reg.quarter_threshold ? (reg.must_register ? "Must register" : "Below threshold") : ""}</span></div>
+      <table><tbody>
+        <tr><td>Turnover</td><td>${rs(r.turnover)}</td></tr>
+        <tr><td>Liable share</td><td>${pct(r.liable_share)}</td></tr>
+        <tr><td>Liable turnover</td><td>${rs(r.liable_turnover)}</td></tr>
+        <tr><td>Levy at ${pct(r.rate)}</td><td>${rs(r.levy)}</td></tr></tbody></table>
+      ${reg && reg.quarter_threshold ? `<p class="note">Registration threshold on this date: ${rs(reg.quarter_threshold, 0)} a quarter or ${rs(reg.annual_threshold, 0)} over four quarters.</p>` : ""}
+      ${sources(r.rule)}`);
+  },
+};
+
+let active = "apit";
+function refresh() { calculators[active](); }
+let timer;
+function debounced() { clearTimeout(timer); timer = setTimeout(refresh, 250); }
+
+function select(tab) {
+  document.querySelectorAll('[role="tab"]').forEach((t) => {
+    const selected = t === tab;
+    t.setAttribute("aria-selected", selected);
+    $(t.getAttribute("aria-controls")).hidden = !selected;
+  });
+  active = tab.id.slice(2);
+  history.replaceState(null, "", "#" + active);  // shareable link to this calculator
+  refresh();
+}
+document.querySelectorAll('[role="tab"]').forEach((tab) => tab.addEventListener("click", () => select(tab)));
+document.querySelectorAll("input, select").forEach((el) => el.addEventListener("input", debounced));
+
+async function fillSelect(id, path) {
+  const options = await fetch(path).then((r) => r.json());
+  $(id).innerHTML = Object.entries(options).map(([k, v]) => `<option value="${esc(k)}">${esc(v)}</option>`).join("");
+}
+
+(async () => {
+  const now = new Date();  // local date, not UTC: Sri Lanka is UTC+5:30
+  $("on").value = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
+  await Promise.all([fillSelect("wht-type", "/api/wht/types"), fillSelect("sscl-activity", "/api/sscl/activities")]);
+  $("wht-type").value = "service_fee";
+  const fromLink = $("t-" + location.hash.slice(1));
+  fromLink ? select(fromLink) : refresh();
+})();
+</script>
+</body>
+</html>

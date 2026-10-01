@@ -1,0 +1,121 @@
+# Withholding tax (WHT) / Advance Income Tax (AIT) deducted by the payer.
+#
+# Each payment type has its own versions, because they change independently
+# (interest went from 5% to 10% on 1 April 2025; nothing else did).
+#
+# monthly_threshold: WHT applies only when the total paid to that person in the
+#   calendar month exceeds this, and then it applies to the FULL payment.
+# exempt_up_to: payments with a gross amount at or below this are exempt.
+
+[_sources]
+circular_2023 = { title = "Circular SEC/2022/E/03: Deduction of WHT and AIT (effective 01.01.2023)", url = "https://www.ird.gov.lk/en/publications/Circulars_Circulars/SEC_2022_E_03.pdf" }
+chart_2526 = { title = "IRD Tax Chart, Y/A 2025/26", url = "https://www.ird.gov.lk/en/publications/SitePages/tax_chart_2526.aspx?menuid=1404" }
+interest_2025 = { title = "Circular SEC/2025/E/02: AIT on interest at 10% from 01.04.2025", url = "https://www.ird.gov.lk/en/publications/Circulars_Circulars/SEC_2025_E_02_E.pdf" }
+amendment_2026 = { title = "Notice SEC/PN/IT/2026/02: Inland Revenue (Amendment) Act No. 11 of 2026", url = "https://www.ird.gov.lk/en/Lists/Latest%20News%20%20Notices/Attachments/794/SEC_PN_IT_2026-02_E.pdf" }
+
+[service_fee]
+name = "Service fee to a resident individual (not an employee)"
+
+[[service_fee.versions]]
+effective_from = 2023-01-01
+rate = 0.05
+monthly_threshold = 100_000
+covers = "Teaching, lecturing, examining; commission or brokerage to insurance, sales or canvassing agents; independent service providers such as doctors, engineers, accountants, lawyers, software developers, researchers and academics."
+sources = ["circular_2023"]
+
+[[service_fee.versions]]
+effective_from = 2026-06-03
+rate = 0.05
+monthly_threshold = 100_000
+covers = "As before, plus auditors, modellers, personal trainers, coaches, valuers, artists, actors, dancers, singers, musicians, event organizers, photographers, videographers, therapists, counsellors, beauticians, cooks, electricians, dentists, veterinarians, social media specialists, brand ambassadors, sports persons, IT specialists, advertising agents, advisors, translators, writers and debt collectors."
+sources = ["amendment_2026"]
+
+[interest]
+name = "Interest or discount"
+
+[[interest.versions]]
+effective_from = 2023-01-01
+rate = 0.05
+sources = ["circular_2023"]
+
+[[interest.versions]]
+effective_from = 2025-04-01
+rate = 0.10
+note = "Resident individuals whose assessable income does not exceed Rs. 1.8M may give the bank a self-declaration to be relieved from this deduction."
+sources = ["interest_2025"]
+
+[rent_resident]
+name = "Rent to a resident person"
+
+[[rent_resident.versions]]
+effective_from = 2023-01-01
+rate = 0.10
+monthly_threshold = 100_000
+sources = ["circular_2023"]
+
+[dividend]
+name = "Dividend"
+
+[[dividend.versions]]
+effective_from = 2023-01-01
+rate = 0.15
+sources = ["circular_2023"]
+
+[winnings]
+name = "Winnings from a lottery, reward, betting or gambling"
+
+[[winnings.versions]]
+effective_from = 2023-01-01
+rate = 0.14
+exempt_up_to = 500_000
+sources = ["circular_2023"]
+
+[royalty]
+name = "Royalty"
+
+[[royalty.versions]]
+effective_from = 2023-01-01
+rate = 0.14
+sources = ["circular_2023"]
+
+[charge_or_premium]
+name = "Charge, natural resource payment or premium"
+
+[[charge_or_premium.versions]]
+effective_from = 2023-01-01
+rate = 0.14
+sources = ["circular_2023"]
+
+[rent_non_resident]
+name = "Rent to a non-resident person"
+
+[[rent_non_resident.versions]]
+effective_from = 2023-01-01
+rate = 0.14
+note = "A Double Tax Avoidance Agreement may allow a lower rate with a tax clearance certificate."
+sources = ["circular_2023"]
+
+[service_fee_non_resident]
+name = "Service fee or insurance premium to a non-resident person"
+
+[[service_fee_non_resident.versions]]
+effective_from = 2023-01-01
+rate = 0.14
+note = "A Double Tax Avoidance Agreement may allow a lower rate with a tax clearance certificate."
+sources = ["circular_2023"]
+
+[transport_non_resident]
+name = "Land, sea, air transport or telecommunication service by a non-resident person"
+
+[[transport_non_resident.versions]]
+effective_from = 2023-01-01
+rate = 0.02
+sources = ["circular_2023"]
+
+[gem_auction]
+name = "Sale price of a gem sold at a National Gem & Jewellery Authority auction"
+
+[[gem_auction.versions]]
+effective_from = 2023-01-01
+rate = 0.025
+sources = ["circular_2023"]

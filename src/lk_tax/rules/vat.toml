@@ -1,0 +1,42 @@
+# Value Added Tax.
+#
+# Registration: a person must register when taxable supplies exceed (or are
+# likely to exceed) the period threshold OR the 12-month threshold.
+# period_threshold_inclusive: under the 2022 Act the period test was
+# "twenty million rupees or more"; later notices say "exceeds".
+
+[[versions]]
+effective_from = 2023-01-01
+note = "15% since 1 September 2022; registration threshold since 1 October 2022 (VAT (Amendment) Act No. 44 of 2022)."
+standard_rate = 0.15
+financial_services_rate = 0.18
+period_threshold = 20_000_000
+period_threshold_inclusive = true
+annual_threshold = 80_000_000
+sources = [
+    { title = "VAT (Amendment) Act No. 44 of 2022", url = "https://www.ird.gov.lk/en/publications/Value%20Added%20Tax_Acts/VAT_Act_No._44_2022_E.pdf" },
+    { title = "IRD: Value Added Tax (rate history)", url = "https://www.ird.gov.lk/en/Type%20of%20Taxes/SitePages/Value%20Added%20Tax%20(VAT).aspx" },
+]
+
+[[versions]]
+effective_from = 2024-01-01
+standard_rate = 0.18
+financial_services_rate = 0.18
+period_threshold = 15_000_000
+period_threshold_inclusive = false
+annual_threshold = 60_000_000
+sources = [
+    { title = "IRD: Value Added Tax (rate history and current thresholds)", url = "https://www.ird.gov.lk/en/Type%20of%20Taxes/SitePages/Value%20Added%20Tax%20(VAT).aspx" },
+]
+
+[[versions]]
+effective_from = 2026-07-01
+note = "Financial services 20.5% (and SSCL-exempt). VAT on non-resident electronic platform services starts. The proposed threshold reduction was abandoned."
+standard_rate = 0.18
+financial_services_rate = 0.205
+period_threshold = 15_000_000
+period_threshold_inclusive = false
+annual_threshold = 60_000_000
+sources = [
+    { title = "Notice SEC/PN/VAT/2026-03: VAT (Amendment) Act No. 14 of 2026", url = "https://www.ird.gov.lk/en/Lists/Latest%20News%20%20Notices/Attachments/799/PN_VAT_2026-03_New_E.pdf" },
+]
